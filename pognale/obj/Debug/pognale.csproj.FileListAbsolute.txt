@@ -1,0 +1,7 @@
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\obj\Debug\pognale.csprojAssemblyReference.cache
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\obj\Debug\pognale.csproj.CoreCompileInputs.cache
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\bin\Debug\pognale.exe.config
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\bin\Debug\pognale.exe
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\bin\Debug\pognale.pdb
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\obj\Debug\pognale.exe
+C:\Users\xoxo\Desktop\тык\mur\pognale\pognale\obj\Debug\pognale.pdb
