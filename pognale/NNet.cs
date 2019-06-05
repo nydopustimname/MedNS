@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace pognale
@@ -16,7 +17,7 @@ namespace pognale
             CreateOutLayer();
         }
 
-        public OneNeuron FeedForward(List<double> inpSignals)
+        public OneNeuron FeedForward(params double[] inpSignals)
         {
             //proverka
             SendSignalsToInpNeurons(inpSignals);
@@ -37,9 +38,9 @@ namespace pognale
             }
         }
 
-        private void SendSignalsToInpNeurons(List<double> inpSignals)
+        private void SendSignalsToInpNeurons(params double[] inpSignals)
         {
-            for (var i = 0; i < inpSignals.Count; i++)
+            for (var i = 0; i < inpSignals.Length; i++)
             {
                 var signal = new List<double>() { inpSignals[i] };
                 var neuron = Layers[0].Neurons[i];
@@ -53,7 +54,7 @@ namespace pognale
             var lastLayer = Layers.Last();
             for (var i = 0; i < Topology.OutputCount; i++)
             {
-                var neuron = new OneNeuron(lastLayer.Count, NeuronType.Output);
+                var neuron = new OneNeuron(lastLayer.NeuronsCount, NeuronType.Output);
                 outputNeurons.Add(neuron);
             }
             var outpLayer = new NLayer(outputNeurons, NeuronType.Output);
@@ -68,7 +69,7 @@ namespace pognale
                 var lastLayer = Layers.Last();
                 for (var i = 0; i < Topology.HiddenLayers[j]; i++)
                 {
-                    var neuron = new OneNeuron(lastLayer.Count);
+                    var neuron = new OneNeuron(lastLayer.NeuronsCount);
                     hiddenNeurons.Add(neuron);
                 }
                 var hiddenLayer = new NLayer(hiddenNeurons);
@@ -86,6 +87,46 @@ namespace pognale
             }
             var inpLayer = new NLayer(inputNeurons, NeuronType.Input);
             Layers.Add(inpLayer);
+        }
+
+        private double BackPropagation (double expected, params double [] inputs)
+        {
+            var actual = FeedForward(inputs).Output;
+            var dif = actual - expected;
+            foreach (var i in Layers.Last().Neurons)
+            {
+                i.Learn(dif, Topology.LearningRate);
+            }
+            for (var i=Layers.Count-2; i>=0; i--)
+            {
+                var layer = Layers[i];
+                var prevLayer = Layers[i + 1];
+                for (var j=0; j<layer.NeuronsCount; j++)
+                {
+                    var neuron = layer.Neurons[j];
+                    for (var k=0; k<prevLayer.NeuronsCount; k++)
+                    {
+                        var prevNeuron = prevLayer.Neurons[k];
+                        var error = prevNeuron.Weights[j] * prevNeuron.Delta;
+                        neuron.Learn(error, Topology.LearningRate);
+                    }
+                }
+            }
+            return dif * dif;
+        }
+
+        public double Learn (List<Tuple<double, double[]>> dataset, int epoch)
+        {
+            var error = 0.0;
+            for (var i=0; i<epoch; i++)
+            {
+                foreach (var j in dataset)
+                {
+                    error+= BackPropagation(j.Item1, j.Item2);
+                }
+            }
+            var res = error / epoch;
+            return res;
         }
     }
 }
